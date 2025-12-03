@@ -1,7 +1,16 @@
 const db = require("../config/db");
 
 exports.getAll = (req, res) => {
-  db.query("SELECT * FROM mesas", (err, result) => {
+  const { estado } = req.query;
+  let query = "SELECT * FROM mesas";
+  let params = [];
+
+  if (estado) {
+    query += " WHERE estado = ?";
+    params.push(estado);
+  }
+
+  db.query(query, params, (err, result) => {
     if (err) return res.status(500).json({ error: err });
     res.json(result);
   });

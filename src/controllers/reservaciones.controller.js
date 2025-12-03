@@ -34,13 +34,23 @@ exports.create = (req, res) => {
     cliente_id: null  // Reservaciones rápidas sin cliente registrado
   };
 
+ 
   const query = "INSERT INTO reservaciones SET ?";
   db.query(query, reservacionData, (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
+
+    // Marcar mesa como ocupada
+    if (mesa_id) {
+      db.query(
+        "UPDATE mesas SET estado = 'Ocupada' WHERE id = ?",
+        [mesa_id],
+        () => {}
+      );
+    }
+
     res.json({ message: "Reservación creada", id: result.insertId });
   });
 };
-
 
 // Editar
 exports.update = (req, res) => {
